@@ -1,0 +1,8 @@
+package webcrawler_project;
+
+import java.util.ArrayList;
+
+public class fetcher {
+	ArrayList<String> urlFrontier = new ArrayList<String>();
+	
+}
