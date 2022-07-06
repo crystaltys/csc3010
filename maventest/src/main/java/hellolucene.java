@@ -1,4 +1,6 @@
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 
 import org.apache.lucene.analysis.Analyzer;
@@ -19,6 +21,11 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.MMapDirectory;
 import org.apache.lucene.store.NoLockFactory;
 import org.apache.lucene.util.QueryBuilder;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+ 
+
 
 public class hellolucene {
 
@@ -26,9 +33,26 @@ public class hellolucene {
 
 		Analyzer analyzer = new StandardAnalyzer();
 		IndexWriterConfig config = new IndexWriterConfig(analyzer);
-
-		Directory directory = new MMapDirectory(new File("C:\\Users\\whats\\Desktop\\SIT\\y3tri3\\3010 - IR").toPath(), NoLockFactory.INSTANCE);
-
+		JSONParser parser = new JSONParser();
+		
+		Directory directory = new MMapDirectory(new File("C:\\Users\\User\\Documents\\GitHub\\csc3010\\LuceneDirectory").toPath(), NoLockFactory.INSTANCE);
+		
+		try (FileReader reader = new FileReader("./json/glasgow1.json"))
+        {
+            //Read JSON file
+            Object obj = parser.parse(reader); 
+            JSONObject JSONList = (JSONObject) obj;
+            String yourhead = (String) JSONList.get("content");
+            System.out.println(yourhead);         
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (org.json.simple.parser.ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		Document doc1 = new Document();
 		doc1.add(new TextField("id", "1", Field.Store.YES));
 		doc1.add(new TextField("title", "Lucene in Action", Field.Store.YES));
@@ -40,14 +64,15 @@ public class hellolucene {
 		doc2.add(new TextField("title", "Java in Action", Field.Store.YES));
 		doc2.add(new TextField("description",
 				"Java is a platform and programming language to build Enterprise Applications", Field.Store.YES));
-
+		
+		
 		try (IndexWriter indexWriter = new IndexWriter(directory, config)) {
 			indexWriter.addDocument(doc1);
 			indexWriter.addDocument(doc2);
 		}
 
 		QueryBuilder queryBuilder = new QueryBuilder(analyzer);
-		Query query = queryBuilder.createPhraseQuery("title", "Lucene", 0);
+		Query query = queryBuilder.createPhraseQuery("title", "java", 0);
 		int maxHitsPerPage = 10;
 		
 		try (IndexReader indexReader = DirectoryReader.open(directory)) {
@@ -63,6 +88,12 @@ public class hellolucene {
 			}
 		}
 
+	}
+	
+	public static void convert() {
+		// take in json file 
+		// fit into doc
+		
 	}
 
 }
