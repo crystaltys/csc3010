@@ -29,21 +29,31 @@ import org.json.simple.parser.JSONParser;
 
 public class hellolucene {
 
+	@SuppressWarnings("unchecked")
 	public static void main(String args[]) throws IOException, ParseException {
-
-		Analyzer analyzer = new StandardAnalyzer();
-		IndexWriterConfig config = new IndexWriterConfig(analyzer);
-		JSONParser parser = new JSONParser();
 		
+		Analyzer analyzer = new StandardAnalyzer();
+		//IndexWriterConfig config = new IndexWriterConfig(analyzer);
+		
+
 		Directory directory = new MMapDirectory(new File("C:\\Users\\User\\Documents\\GitHub\\csc3010\\LuceneDirectory").toPath(), NoLockFactory.INSTANCE);
 		
-		try (FileReader reader = new FileReader("./json/glasgow1.json"))
+		JSONParser parser = new JSONParser();
+		
+		try (FileReader reader = new FileReader("C:\\Users\\User\\Documents\\GitHub\\csc3010\\LuceneJson\\sample.json"))
         {
-            //Read JSON file
+			Document doc = new Document();
             Object obj = parser.parse(reader); 
-            JSONObject JSONList = (JSONObject) obj;
-            String yourhead = (String) JSONList.get("content");
-            System.out.println(yourhead);         
+            JSONArray jsonArray = (JSONArray) obj;
+            jsonArray.forEach( emp ->{
+				try {
+					addIntoDocument( (JSONObject) emp );
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			});   
+            
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -53,26 +63,26 @@ public class hellolucene {
 			e.printStackTrace();
 		}
 		
-		Document doc1 = new Document();
-		doc1.add(new TextField("id", "1", Field.Store.YES));
-		doc1.add(new TextField("title", "Lucene in Action", Field.Store.YES));
-		doc1.add(new TextField("description", "Lucene is a platform where we can index our data to make it searchable.",
-				Field.Store.YES));
-
-		Document doc2 = new Document();
-		doc2.add(new TextField("id", "2", Field.Store.YES));
-		doc2.add(new TextField("title", "Java in Action", Field.Store.YES));
-		doc2.add(new TextField("description",
-				"Java is a platform and programming language to build Enterprise Applications", Field.Store.YES));
-		
-		
-		try (IndexWriter indexWriter = new IndexWriter(directory, config)) {
-			indexWriter.addDocument(doc1);
-			indexWriter.addDocument(doc2);
-		}
+//		Document doc1 = new Document();
+//		doc1.add(new TextField("id", "1", Field.Store.YES));
+//		doc1.add(new TextField("title", "Lucene in Action", Field.Store.YES));
+//		doc1.add(new TextField("description", "Lucene is a platform where we can index our data to make it searchable.",
+//				Field.Store.YES));
+//
+//		Document doc2 = new Document();
+//		doc2.add(new TextField("id", "2", Field.Store.YES));
+//		doc2.add(new TextField("title", "Java in Action", Field.Store.YES));
+//		doc2.add(new TextField("description",
+//				"Java is a platform and programming language to build Enterprise Applications", Field.Store.YES));
+//		
+//		
+//		try (IndexWriter indexWriter = new IndexWriter(directory, config)) {
+//			indexWriter.addDocument(doc1);
+//			indexWriter.addDocument(doc2);
+//		}
 
 		QueryBuilder queryBuilder = new QueryBuilder(analyzer);
-		Query query = queryBuilder.createPhraseQuery("title", "java", 0);
+		Query query = queryBuilder.createPhraseQuery("title", "glasgow", 0);
 		int maxHitsPerPage = 10;
 		
 		try (IndexReader indexReader = DirectoryReader.open(directory)) {
@@ -90,10 +100,35 @@ public class hellolucene {
 
 	}
 	
-	public static void convert() {
-		// take in json file 
-		// fit into doc
+	private static void addIntoDocument(JSONObject obj) throws IOException 
+    {
+		Analyzer analyzer = new StandardAnalyzer();
+		IndexWriterConfig config = new IndexWriterConfig(analyzer);
+		Directory directory = new MMapDirectory(new File("C:\\Users\\User\\Documents\\GitHub\\csc3010\\LuceneDirectory").toPath(), NoLockFactory.INSTANCE);
 		
-	}
+        //Get object within list
+        JSONObject Object = (JSONObject) obj;
+        
+        //Get URL
+        String url =(String) Object.get("url");
+        System.out.println("URL of the document : " + url);
+        
+        //Get title
+        String title = (String) Object.get("title");    
+        System.out.println("Title of the document : " + title);
+         
+        //Get content
+        String content = (String) Object.get("content");  
+        System.out.println("content of the document : "+content);
+        
+        Document doc = new Document();
+		doc.add(new TextField("url", url, Field.Store.YES));
+		doc.add(new TextField("title", title, Field.Store.YES));
+		doc.add(new TextField("content", content,Field.Store.YES));
+		
+		try (IndexWriter indexWriter = new IndexWriter(directory, config)) {
+			indexWriter.addDocument(doc);	
+		}
+    }
 
 }
