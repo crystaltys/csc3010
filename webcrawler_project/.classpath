@@ -14,5 +14,6 @@
 	<classpathentry kind="lib" path="C:/Users/tyscr.LAPTOP-SRSTJ233/Desktop/csc3010/external_jars/lucene-queryparser-8.11.2.jar"/>
 	<classpathentry kind="lib" path="C:/Users/tyscr.LAPTOP-SRSTJ233/Desktop/csc3010/external_jars/lucene-queries-8.11.2.jar"/>
 	<classpathentry kind="lib" path="C:/Users/tyscr.LAPTOP-SRSTJ233/Desktop/csc3010/external_jars/json-simple-2.1.2.jar"/>
+	<classpathentry kind="lib" path="C:/Users/tyscr.LAPTOP-SRSTJ233/Desktop/csc3010/external_jars/jsoup-1.15.2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
